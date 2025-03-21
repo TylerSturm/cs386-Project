@@ -38,7 +38,7 @@ Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of cond
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning.  
-Current Version: v0.4.0
+Current Version: v0.1.0
 
 ## Authors
 
