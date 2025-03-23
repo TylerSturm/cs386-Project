@@ -15,12 +15,11 @@ All the members of the group should have worked on implementation activities and
 Only stable code should be included in the release.   
 The code that is still under development should be in branches.  
 
-### Example:
 - **Requirement:** As a developer, I want to add a ride the bus game that the player will play.  
 - **Issue:** https://github.com/TylerSturm/cs386-Project/issues/12 
 - **Pull request:** https://github.com/TylerSturm/cs386-Project/pull/16
 - **Implemented by:** Daniel Arden  
-- **Approved by:**  
+- **Approved by:**  Tyler Sturm
 - **Print screen:** N/A  
 
 ### Template:
@@ -45,8 +44,7 @@ In this test it will check to see if ecah sction of the ride the bus game works.
 tests for each sections correct and incorrect guess by the player.  
 
 **Printout of Test results:**  
-![Image of test results for ride the bus game.](Tests/RideBusTest.png)
-
+![Image of test results for ride the bus game.](/Tests/RideBusTest.png)
 
 ## Technology
 
