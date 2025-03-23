@@ -35,11 +35,11 @@ The code that is still under development should be in branches.
 
 **Test framework used:** Unity Test Framework  
 
-**Link to Test folder:**  
+**Link to Test folder:** https://github.com/TylerSturm/cs386-Project/tree/main/Tests  
 
-**Class File link:**  
+**Class File link:** https://github.com/TylerSturm/cs386-Project/blob/main/code/Ride.cs  
 
-**Test link:**  
+**Test link:** https://github.com/TylerSturm/cs386-Project/blob/main/Tests/NewTestScript.cs  
 
 In this test it will check to see if ecah sction of the ride the bus game works. It will
 tests for each sections correct and incorrect guess by the player.  
