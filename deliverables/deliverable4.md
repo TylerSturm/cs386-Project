@@ -1,9 +1,9 @@
 # Deliverable 4
 
 ## Introduction
-Casino Shooter is a unique blend of casino-style games and fast-paced shooter action. In our game, players engage in various  
+Our Casino Shooter is a unique blend of casino-style games and shooter action. In our game, players engage in various  
 classic card and casino games to determine their loadout, weapons, and abilities for the shooter phase. Based on how well you  
-do in each game, you will earn different tiers of weapons, health adn other abilites for when you enter the shooter phase of our game.
+do in each game, you will earn different tiers of weapons, health and other abilites for when you enter the shooter phase of our game.
 In the shooter phase you will face a AI oppenent and will be given rewards for winning.
 
 Link to GitHub.  
@@ -14,21 +14,20 @@ Order the requirements below by the name of the student who implemented them.
 All the members of the group should have worked on implementation activities and submitted pull requests.   
 Only stable code should be included in the release.   
 The code that is still under development should be in branches.  
-
-- **Requirement:** As a developer, I want to add a ride the bus game that the player will play.  
-- **Issue:** https://github.com/TylerSturm/cs386-Project/issues/12 
-- **Pull request:** https://github.com/TylerSturm/cs386-Project/pull/16
-- **Implemented by:** Daniel Arden  
-- **Approved by:**  Tyler Sturm
-- **Print screen:** N/A  
-
-### Template:
-- **Requirement:**  
-- **Issue:**  
-- **Pull request:**  
-- **Implemented by:**  
-- **Approved by:**  
-- **Print screen:** *(A screenshot that depicts the implemented feature, if applicable.)*  
+  
+**Requirement:** As a developer, I want to add a ride the bus game that the player will play.  
+**Issue:** https://github.com/TylerSturm/cs386-Project/issues/12  
+**Pull request:** https://github.com/TylerSturm/cs386-Project/pull/16  
+**Implemented by:** Daniel Arden  
+**Approved by:**  Tyler Sturm  
+**Print screen:** N/A  
+    
+**Requirement:**  
+**Issue:** https://github.com/TylerSturm/cs386-Project/issues/1  
+**Pull request:** https://github.com/TylerSturm/cs386-Project/pull/13  
+**Implemented by:** Tyler Sturm  
+**Approved by:** Daniel Arden  
+**Print screen:** N/A  
 
 ## Tests
 
