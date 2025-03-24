@@ -92,5 +92,5 @@ We also have gotten better at communicating with eachother. We have a group chat
 after getting code down and how long that took. Based on what we have done we can get better ideas of how long task will take. We also have tended to do work the day it is due, we have gotten better and started the deliverable earlier to ask questions as well as the worksheets if we didnt finish them in class.
 
 ## Demo
-Include a link to a video showing the system working.  
+Link to demo video: https://youtu.be/on8P5Kumnu8  
 
