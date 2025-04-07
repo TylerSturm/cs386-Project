@@ -12,14 +12,15 @@ The UI will be managed by a system to determine which casino card game they are 
 game once done with card games. The card games will share info whether they won or lost and what the outcome was, busted 
 by 1 or got 3 out of 4 correct in ride the bus. This will be shared with the shooter game to determine weapons health etc.
 
-![Image](/deliverables/package.pdf)
+![Image](/deliverables/package.png)
 
 # Class Diagrams   
+![Image of the UML diagram](/deliverables/class.png)
 
 # Sequence Diagrams  
 Player plays a card game, gets advantage for the shooter game based on winning or losing, then plays the shooter game.
 
-![Image of the UML diagram](/deliverables/class.pdf)
+
 
 # Design Patterns 
 State Pattern (Behavioral)
