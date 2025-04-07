@@ -20,13 +20,13 @@ by 1 or got 3 out of 4 correct in ride the bus. This will be shared with the sho
 # Sequence Diagrams  
 Player plays a card game, gets advantage for the shooter game based on winning or losing, then plays the shooter game.
 
-
+![Image of the UML diagram](/deliverables/sequence.png)
 
 # Design Patterns 
 State Pattern (Behavioral)
-
+![Image of the UML diagram](/deliverables/design1.png)
 Decorator Pattern (Structural)
-
+![Image of the UML diagram](/deliverables/design2.png)
 
 
 
