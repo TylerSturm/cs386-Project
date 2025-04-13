@@ -148,12 +148,12 @@ public class Ride : MonoBehaviour
 
         if (guess == actualColor)
         {
-            Debug.Log("✅ Correct guess!");
+            Debug.Log("Correct guess!");
             phase++;
         }
         else
         {
-            Debug.Log("❌ Wrong guess! Ride the bus...");
+            Debug.Log("Wrong guess! Ride the bus...");
             isGameOver = true;
         }
     }
@@ -179,12 +179,12 @@ public class Ride : MonoBehaviour
 
         if (guess == result || result == "equal")
         {
-            Debug.Log("✅ Correct guess or tie (tie is a win)!");
+            Debug.Log("Correct guess or tie (tie is a win)!");
             phase++;
         }
         else
         {
-            Debug.Log("❌ Wrong guess! Ride the bus...");
+            Debug.Log("Wrong guess! Ride the bus...");
             isGameOver = true;
         }
     }
@@ -210,12 +210,12 @@ public class Ride : MonoBehaviour
 
         if (guess == result || currentCard.number == firstCard.number || currentCard.number == secondCard.number)
         {
-            Debug.Log("✅ Correct guess or tie (tie is a win)!");
+            Debug.Log("Correct guess or tie (tie is a win)!");
             phase++;
         }
         else
         {
-            Debug.Log("❌ Wrong guess! Ride the bus...");
+            Debug.Log("Wrong guess! Ride the bus...");
             isGameOver = true;
         }
     }
@@ -246,13 +246,13 @@ public class Ride : MonoBehaviour
 
         if (guess == actualSuit)
         {
-            Debug.Log("✅ Correct guess! End Game");
+            Debug.Log("Correct guess! End Game");
             phase++;
             isGameOver = true;
         }
         else
         {
-            Debug.Log("❌ Wrong guess! Ride the bus... End Game");
+            Debug.Log("Wrong guess! Ride the bus... End Game");
             isGameOver = true;
         }
     }
