@@ -1,7 +1,7 @@
 using UnityEngine;
 using NUnit.Framework;
-using UnityEngine.TestTools;
 using System.Reflection;
+using System.Collections.Generic;
 
 public class RideTests
 {
@@ -13,6 +13,10 @@ public class RideTests
     {
         testObject = new GameObject();
         ride = testObject.AddComponent<Ride>();
+
+        // Initialize required private lists
+        SetPrivateField("drawnCards", new List<CardInfo>());
+        SetPrivateField("coverCards", new List<GameObject>());
     }
 
     [TearDown]
@@ -21,157 +25,143 @@ public class RideTests
         Object.DestroyImmediate(testObject);
     }
 
-    // Simulate a correct color guess
     [Test]
     public void TestColorGuessCorrect()
     {
-        // Set the current card to a red suit (Hearts or Diamonds)
-        SetPrivateField("currentCardSuit", "Hearts");
-        SetPrivateField("currentCardValue", 7);
-        SetPrivateField("phase", 1); // Color Guess Phase
+        SetPrivateField("phase", 1);
+        SetPrivateField("guessIndex", 0);
+        AddCardToDrawnCards(new CardInfo(7, 2)); // Diamonds (red)
 
-        // Simulate pressing 'R' for Red
-        var method = GetPrivateMethod("colorGuess");
-        method.Invoke(ride, null);
+        InvokePrivateMethod("colorGuess", "red");
 
-        // Assert phase advances to Phase 2
-        int phase = (int)GetPrivateField("phase");
-        Assert.AreEqual(2, phase, "Phase should advance to 2 after correct color guess.");
+        Assert.AreEqual(2, GetPrivateField<int>("phase"));
     }
 
-    // Simulate a wrong color guess (should end the game)
     [Test]
     public void TestColorGuessWrong()
     {
-        // Set the current card to a black suit (Clubs or Spades)
-        SetPrivateField("currentCardSuit", "Clubs");
-        SetPrivateField("currentCardValue", 10);
-        SetPrivateField("phase", 1); // Color Guess Phase
+        SetPrivateField("phase", 1);
+        SetPrivateField("guessIndex", 0);
+        AddCardToDrawnCards(new CardInfo(10, 4)); // Spades (black)
 
-        // Simulate pressing 'R' for Red (incorrect guess)
-        var method = GetPrivateMethod("colorGuess");
-        method.Invoke(ride, null);
+        InvokePrivateMethod("colorGuess", "red");
 
-        // Assert the game is over
-        bool isGameOver = (bool)GetPrivateField("isGameOver");
-        Assert.IsTrue(isGameOver, "Game should be over after a wrong color guess.");
+        Assert.IsTrue(GetPrivateField<bool>("isGameOver"));
     }
 
-    // Simulate a correct higher/lower guess
     [Test]
     public void TestHighLowerGuessCorrect()
     {
         SetPrivateField("phase", 2);
-        SetPrivateField("previousCardValue", 5); // Previous card is 5
-        SetPrivateField("currentCardValue", 10); // Drawn card is 10 (higher)
+        SetPrivateField("guessIndex", 1);
+        SetPrivateField("firstCard", new CardInfo(5, 1)); // value 5
+        AddCardToDrawnCards(new CardInfo(0, 0)); // index 0 filler
+        AddCardToDrawnCards(new CardInfo(10, 3)); // value 10 (higher)
 
-        // Simulate pressing 'H' for higher
-        var method = GetPrivateMethod("highLowerGuess");
-        method.Invoke(ride, null);
+        InvokePrivateMethod("higherLowerGuess", "higher");
 
-        // Assert phase advances to Phase 3
-        int phase = (int)GetPrivateField("phase");
-        Assert.AreEqual(3, phase, "Phase should advance to 3 after correct high/lower guess.");
+        Assert.AreEqual(3, GetPrivateField<int>("phase"));
     }
 
-    // Simulate a wrong higher/lower guess (should end the game)
     [Test]
     public void TestHighLowerGuessWrong()
     {
         SetPrivateField("phase", 2);
-        SetPrivateField("previousCardValue", 10); // Previous card is 10
-        SetPrivateField("currentCardValue", 5); // Drawn card is 5 (lower)
+        SetPrivateField("guessIndex", 1);
+        SetPrivateField("firstCard", new CardInfo(10, 1));
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(5, 3));
 
-        // Simulate pressing 'H' for higher (incorrect guess)
-        var method = GetPrivateMethod("highLowerGuess");
-        method.Invoke(ride, null);
+        InvokePrivateMethod("higherLowerGuess", "higher");
 
-        // Assert the game is over
-        bool isGameOver = (bool)GetPrivateField("isGameOver");
-        Assert.IsTrue(isGameOver, "Game should be over after a wrong high/lower guess.");
+        Assert.IsTrue(GetPrivateField<bool>("isGameOver"));
     }
 
-    // Simulate a correct inside/outside guess
     [Test]
     public void TestInsideOutsideGuessCorrect()
     {
         SetPrivateField("phase", 3);
-        SetPrivateField("previousCardValue", 5); // First card value is 5
-        SetPrivateField("currentCardValue", 7); // Drawn card is inside (between 5 and 10)
+        SetPrivateField("guessIndex", 2);
+        SetPrivateField("firstCard", new CardInfo(5, 1));
+        SetPrivateField("secondCard", new CardInfo(10, 2));
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(7, 3));
 
-        // Simulate pressing 'I' for inside
-        var method = GetPrivateMethod("insideOutsideGuess");
-        method.Invoke(ride, null);
+        InvokePrivateMethod("insideOutsideGuess", "inside");
 
-        // Assert phase advances to Phase 4
-        int phase = (int)GetPrivateField("phase");
-        Assert.AreEqual(4, phase, "Phase should advance to 4 after correct inside/outside guess.");
+        Assert.AreEqual(4, GetPrivateField<int>("phase"));
     }
 
-    // Simulate a wrong inside/outside guess (should end the game)
     [Test]
     public void TestInsideOutsideGuessWrong()
     {
         SetPrivateField("phase", 3);
-        SetPrivateField("previousCardValue", 10); // First card value is 10
-        SetPrivateField("currentCardValue", 5); // Drawn card is outside (less than 10)
+        SetPrivateField("guessIndex", 2);
+        SetPrivateField("firstCard", new CardInfo(3, 1));
+        SetPrivateField("secondCard", new CardInfo(8, 2));
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(10, 3));
 
-        // Simulate pressing 'I' for inside (incorrect guess)
-        var method = GetPrivateMethod("insideOutsideGuess");
-        method.Invoke(ride, null);
+        InvokePrivateMethod("insideOutsideGuess", "inside");
 
-        // Assert the game is over
-        bool isGameOver = (bool)GetPrivateField("isGameOver");
-        Assert.IsTrue(isGameOver, "Game should be over after a wrong inside/outside guess.");
+        Assert.IsTrue(GetPrivateField<bool>("isGameOver"));
     }
 
-    // Simulate a correct suit guess
     [Test]
     public void TestSuitGuessCorrect()
     {
         SetPrivateField("phase", 4);
-        SetPrivateField("currentCardSuit", "Clubs"); // 3rd suit (index 2)
+        SetPrivateField("guessIndex", 3);
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(7, 1)); // Clubs
 
-        // Simulate pressing '3' for Clubs
-        var method = GetPrivateMethod("suitGuess");
-        method.Invoke(ride, null);
+        InvokePrivateMethod("guessSuit", "clubs");
 
-        // Assert the game is over
-        bool isGameOver = (bool)GetPrivateField("isGameOver");
-        Assert.IsTrue(isGameOver, "Game should end after correct suit guess.");
+        Assert.IsTrue(GetPrivateField<bool>("isGameOver"));
     }
 
-    // Simulate a wrong suit guess (should end the game)
     [Test]
     public void TestSuitGuessWrong()
     {
         SetPrivateField("phase", 4);
-        SetPrivateField("currentCardSuit", "Hearts"); // 1st suit (index 0)
+        SetPrivateField("guessIndex", 3);
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(0, 0));
+        AddCardToDrawnCards(new CardInfo(7, 3)); // Hearts
 
-        // Simulate pressing '2' for Diamonds (incorrect guess)
-        var method = GetPrivateMethod("suitGuess");
-        method.Invoke(ride, null);
+        InvokePrivateMethod("guessSuit", "spades");
 
-        // Assert the game is over
-        bool isGameOver = (bool)GetPrivateField("isGameOver");
-        Assert.IsTrue(isGameOver, "Game should end after wrong suit guess.");
+        Assert.IsTrue(GetPrivateField<bool>("isGameOver"));
     }
 
-    // Helper methods to access private fields and methods
-    private void SetPrivateField(string fieldName, object value)
+    // Utilities
+
+    private void SetPrivateField<T>(string name, T value)
     {
-        var field = typeof(Ride).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-        field.SetValue(ride, value);
+        typeof(Ride).GetField(name, BindingFlags.NonPublic | BindingFlags.Instance)
+            .SetValue(ride, value);
     }
 
-    private object GetPrivateField(string fieldName)
+    private T GetPrivateField<T>(string name)
     {
-        var field = typeof(Ride).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-        return field.GetValue(ride);
+        return (T)typeof(Ride).GetField(name, BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetValue(ride);
     }
 
-    private MethodInfo GetPrivateMethod(string methodName)
+    private void InvokePrivateMethod(string name, params object[] parameters)
     {
-        return typeof(Ride).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
+        typeof(Ride).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance)
+            .Invoke(ride, parameters);
+    }
+
+    private void AddCardToDrawnCards(CardInfo card)
+    {
+        var drawnCards = GetPrivateField<List<CardInfo>>("drawnCards");
+        drawnCards.Add(card);
     }
 }
