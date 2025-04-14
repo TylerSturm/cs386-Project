@@ -14,6 +14,13 @@ Implemented by: Daniel
 Approved by: Brodric  
 Print screen: ![Image of ride the bus game.](/deliverables/rideGame.png)
 
+Requirement: As a developer, I want our workspace to be neat and easy to understand  
+Issue: https://github.com/TylerSturm/cs386-Project/issues/24  
+Pull request: https://github.com/TylerSturm/cs386-Project/pull/23  
+Implemented by: Tyler  
+Approved by: Daniel  
+Print Screen: N/A  
+
 ## Tests
 **Test framework used:** Unity Test Framework  
 **Link to Test folder:** https://github.com/TylerSturm/cs386-Project/tree/main/Tests  
@@ -27,10 +34,15 @@ tests for each section's correct and incorrect guess by the player.
 ![Image of test results for ride the bus game.](/deliverables/rideTests.png)
 
 ## Demo
-Include a link to a video showing the system working.
+Link to Demo Video:  
+https://youtu.be/uJxLErCi4K4  
 
 ## Code quality
-Describe how your team managed code quality. What were your policies, conventions, adopted best practices, etc. to foster high-quality code? 
+As part of my tasks this week, I went through our code and changed how we switch between games to improve functionality. 
+Originally, all of the assets were piled on top of each other in the same scene, causing clutter and making it difficult to 
+tell which assets belonged to which game. To fix this, I made it so that each game has its own scene, spawning only the assets 
+needed for that specific game when they are needed. With this change, we can address bugs much more easily for any individual game, 
+rather than having to sort through every asset at once.
 
 ## Lessons Learned
 We have been a lot better at getting work done on time and not doing it at the last second. We have figured out a better 
