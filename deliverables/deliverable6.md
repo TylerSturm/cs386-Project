@@ -6,6 +6,8 @@ and abilities for the shooter phase. Based on how well you do in each game, you 
 and other abilities for when you enter the shooter phase of our game. In the shooter phase, you will face an AI opponent and will 
 be given rewards for winning.
 
+https://github.com/TylerSturm/cs386-Project
+
 ## Requirements
 Requirement: As a developer, I want the card games to be fully functional and have correct responses.  
 Issue: https://github.com/TylerSturm/cs386-Project/issues/21  
