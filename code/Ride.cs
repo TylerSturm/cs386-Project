@@ -1,159 +1,296 @@
 using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
+
+[System.Serializable]
+public struct CardInfo
+{
+    
+    public int number; // 1-13
+    public int color;  // 1-4
+
+    public CardInfo(int number, int color)
+    {
+        this.number = number;
+        this.color = color;
+    }
+
+    public override string ToString()
+    {
+        return $"Card Number: {number}, Color: {color}";
+    }
+}
 
 public class Ride : MonoBehaviour
 {
-    private int currentCardValue;
-    private int previousCardValue;
-    private string currentCardSuit;
-    private string[] suits = { "Hearts", "Diamonds", "Clubs", "Spades" };
+    public GameObject[] cards;
+    public GameObject coverCard;
+    public Vector3 playerPosition = new Vector3(-10f, 0, 0);
 
-    private int phase = 1;  // Track which phase the player is in
-    private bool isGameOver = false;  // Stops the game once it's over
+    private List<GameObject> coverCards = new List<GameObject>();
+    private List<CardInfo> drawnCards = new List<CardInfo>();
+    private int coverCardIndex = 0;
+    private int guessIndex = 0;
+    private int phase = 1;
+    private int currentPhase = 0;
+    private bool isGameOver = false;
+    private CardInfo firstCard;
+    private CardInfo secondCard;
 
     void Start()
     {
+        for (int i = 0; i < 4; i++)
+        {
+            CardInfo cardInfo = drawCard(playerPosition);
+            drawnCards.Add(cardInfo);
+
+            GameObject cover = coverCardAtPosition(playerPosition);
+            coverCards.Add(cover);
+
+            playerPosition.x += 1.5f;
+        }
+
+        firstCard = drawnCards[0];
+        secondCard = drawnCards[1];
+
+        Debug.Log("=================================================");
         Debug.Log("Welcome to Ride the Bus!");
-        Debug.Log("Phase 1: Guess the color (Press R for Red / B for Black)");
+        Debug.Log("Press c to reveal one card at a time to cheat.");
     }
 
     void Update()
     {
-        if (isGameOver) return;  // Stop processing if the game is over
+        if (isGameOver) return;
 
-        // Phase 1: Color Guess
-        if (phase == 1 && (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.B)))
+        // Show phase instructions once per phase
+        if (phase != currentPhase)
         {
-            colorGuess();
+            currentPhase = phase;
+            ShowPhaseInstructions();
         }
-        // Phase 2: Higher or Lower
-        else if (phase == 2 && (Input.GetKeyDown(KeyCode.H) || Input.GetKeyDown(KeyCode.L)))
+
+        if (phase == 1)
         {
-            highLowerGuess();
+            if (Input.GetKeyDown(KeyCode.R)) colorGuess("red");
+            else if (Input.GetKeyDown(KeyCode.B)) colorGuess("black");
         }
-        // Phase 3: Inside or Outside
-        else if (phase == 3 && (Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.O)))
+        else if (phase == 2)
         {
-            insideOutsideGuess();
+            if (Input.GetKeyDown(KeyCode.H)) higherLowerGuess("higher");
+            else if (Input.GetKeyDown(KeyCode.L)) higherLowerGuess("lower");
         }
-        // Phase 4: Suit Guess
-        else if (phase == 4 && (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) ||
-                                Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4)))
+        else if (phase == 3)
         {
-            suitGuess();
+            if (Input.GetKeyDown(KeyCode.I)) insideOutsideGuess("inside");
+            else if (Input.GetKeyDown(KeyCode.O)) insideOutsideGuess("outside");
+        }
+        else if (phase == 4)
+        {
+            if (Input.GetKeyDown(KeyCode.C)) guessSuit("clubs");
+            else if (Input.GetKeyDown(KeyCode.D)) guessSuit("diamonds");
+            else if (Input.GetKeyDown(KeyCode.H)) guessSuit("hearts");
+            else if (Input.GetKeyDown(KeyCode.S)) guessSuit("spades");
+        }
+
+        // Manual reveal
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (coverCardIndex < coverCards.Count)
+            {
+                RemoveCoverCard(coverCardIndex);
+                coverCardIndex++;
+            }
+            else
+            {
+                Debug.Log("All cover cards have been removed.");
+            }
         }
     }
 
-    void colorGuess()
+    void ShowPhaseInstructions()
     {
-        DrawCard();
-        bool isRed = (currentCardSuit == "Hearts" || currentCardSuit == "Diamonds");
-        bool guessedRed = Input.GetKeyDown(KeyCode.R);
-
-        Debug.Log($"You drew {GetCardFace(currentCardValue)} of {currentCardSuit}");
-
-        if (isRed == guessedRed)
+        switch (phase)
         {
-            Debug.Log("Correct! Move to Phase 2: Higher or Lower (Press H for Higher / L for Lower)");
-            previousCardValue = currentCardValue;
-            phase = 2;
+            case 1:
+                Debug.Log("Round 1: Guess the color of the card!");
+                Debug.Log("Controls: Press 'R' for Red or 'B' for Black.");
+                break;
+            case 2:
+                Debug.Log("Round 2: Will the card be higher or lower than your first card?");
+                Debug.Log("Controls: Press 'H' for Higher or 'L' for Lower.");
+                break;
+            case 3:
+                Debug.Log("Round 3: Will the card be inside or outside the range of your first two cards?");
+                Debug.Log("Controls: Press 'I' for Inside or 'O' for Outside.");
+                break;
+            case 4:
+                Debug.Log("Round 4: Guess the suit of the card!");
+                Debug.Log("Controls: Press 'C' for Clubs, 'D' for Diamonds, 'H' for Hearts, or 'S' for Spades.");
+
+                break;
+        }
+    }
+
+    void colorGuess(string guess)
+    {
+        if (guessIndex >= drawnCards.Count)
+        {
+            Debug.Log("No more cards to guess.");
+            return;
+        }
+
+        CardInfo card = drawnCards[guessIndex];
+        string actualColor = (card.color == 2 || card.color == 3) ? "red" : "black";
+
+        Debug.Log($"You guessed: {guess}");
+        Debug.Log($"Actual card color: {actualColor} (Suit {card.color})");
+
+        RemoveCoverCard(guessIndex);
+        guessIndex++;
+
+        if (guess == actualColor)
+        {
+            Debug.Log("Correct guess!");
+            phase++;
         }
         else
         {
-            GameOver("Wrong guess! Game Over.");
+            Debug.Log("Wrong guess! Ride the bus...");
+            Invoke("nextGame", 3f);
+            isGameOver = true;
         }
     }
 
-    void highLowerGuess()
+    void higherLowerGuess(string guess)
     {
-        DrawCard();
-        bool guessHigher = Input.GetKeyDown(KeyCode.H);
-
-        Debug.Log($"You drew {GetCardFace(currentCardValue)} of {currentCardSuit}");
-
-        if ((guessHigher && currentCardValue > previousCardValue) ||
-            (!guessHigher && currentCardValue < previousCardValue))
+        if (guessIndex >= drawnCards.Count)
         {
-            Debug.Log("Correct! Move to Phase 3: Inside or Outside (Press I for Inside / O for Outside)");
-            previousCardValue = currentCardValue;
-            phase = 3;
+            Debug.Log("No more cards to guess.");
+            return;
+        }
+
+        CardInfo currentCard = drawnCards[guessIndex];
+
+        string result = currentCard.number > firstCard.number ? "higher" :
+                        currentCard.number < firstCard.number ? "lower" : "equal";
+
+        Debug.Log($"You guessed: {guess}");
+        Debug.Log($"Actual card: {currentCard.number} vs First card: {firstCard.number} → {result}");
+
+        RemoveCoverCard(guessIndex);
+        guessIndex++;
+
+        if (guess == result || result == "equal")
+        {
+            Debug.Log("Correct guess or tie (tie is a win)!");
+            phase++;
         }
         else
         {
-            GameOver("Wrong guess! Game Over.");
+            Debug.Log("Wrong guess! Ride the bus...");
+            Invoke("nextGame", 3f);
+            isGameOver = true;
         }
     }
 
-    void insideOutsideGuess()
+    void insideOutsideGuess(string guess)
     {
-        int secondValue = previousCardValue;
-        previousCardValue = currentCardValue;
-
-        DrawCard();
-
-        int low = Mathf.Min(previousCardValue, secondValue);
-        int high = Mathf.Max(previousCardValue, secondValue);
-        bool isInside = currentCardValue > low && currentCardValue < high;
-        bool guessedInside = Input.GetKeyDown(KeyCode.I);
-
-        Debug.Log($"You drew {GetCardFace(currentCardValue)} of {currentCardSuit}");
-
-        if ((guessedInside && isInside) || (!guessedInside && !isInside))
+        if (guessIndex >= drawnCards.Count)
         {
-            Debug.Log("Correct! Move to Phase 4: Guess the suit (1-Hearts, 2-Diamonds, 3-Clubs, 4-Spades)");
-            phase = 4;
+            Debug.Log("No more cards to guess.");
+            return;
+        }
+
+        CardInfo currentCard = drawnCards[guessIndex];
+        bool isInside = currentCard.number > Mathf.Min(firstCard.number, secondCard.number) &&
+                        currentCard.number < Mathf.Max(firstCard.number, secondCard.number);
+        string result = isInside ? "inside" : "outside";
+
+        Debug.Log($"You guessed: {guess}");
+        Debug.Log($"Card {currentCard.number} is {result} the range of first ({firstCard.number}) and second card ({secondCard.number})");
+
+        RemoveCoverCard(guessIndex);
+        guessIndex++;
+
+        if (guess == result || currentCard.number == firstCard.number || currentCard.number == secondCard.number)
+        {
+            Debug.Log("Correct guess or tie (tie is a win)!");
+            phase++;
         }
         else
         {
-            GameOver("Wrong guess! Game Over.");
+            Debug.Log("Wrong guess! Ride the bus...");
+            Invoke("nextGame", 3f);
+            isGameOver = true;
         }
     }
 
-    void suitGuess()
+    void guessSuit(string guess)
     {
-        DrawCard();
-
-        int guessedSuit = -1;
-        if (Input.GetKeyDown(KeyCode.Alpha1)) guessedSuit = 0;
-        if (Input.GetKeyDown(KeyCode.Alpha2)) guessedSuit = 1;
-        if (Input.GetKeyDown(KeyCode.Alpha3)) guessedSuit = 2;
-        if (Input.GetKeyDown(KeyCode.Alpha4)) guessedSuit = 3;
-
-        int drawnSuitIndex = System.Array.IndexOf(suits, currentCardSuit);
-
-        Debug.Log($"You drew {GetCardFace(currentCardValue)} of {currentCardSuit}");
-
-        if (guessedSuit == drawnSuitIndex)
+        if (guessIndex >= drawnCards.Count)
         {
-            Debug.Log("Congratulations! You finished the ride!");
+            Debug.Log("No more cards to guess.");
+            return;
+        }
+
+        CardInfo currentCard = drawnCards[guessIndex];
+        string actualSuit = currentCard.color switch
+        {
+            1 => "clubs",
+            2 => "diamonds",
+            3 => "hearts",
+            4 => "spades",
+            _ => "unknown"
+        };
+
+        Debug.Log($"You guessed: {guess}");
+        Debug.Log($"Actual suit: {actualSuit}");
+
+        RemoveCoverCard(guessIndex);
+        guessIndex++;
+
+        if (guess == actualSuit)
+        {
+            Debug.Log("Correct guess! End Game");
+            Invoke("nextGame", 3f);
+            phase++;
             isGameOver = true;
         }
         else
         {
-            GameOver("Wrong suit! Game Over.");
+            Debug.Log("Wrong guess! Ride the bus... End Game");
+            Invoke("nextGame", 3f);
+            isGameOver = true;
         }
     }
 
-    void DrawCard()
+    CardInfo drawCard(Vector3 position)
     {
-        currentCardValue = Random.Range(1, 14); // Ace (1) to King (13)
-        currentCardSuit = suits[Random.Range(0, 4)];
+        int cardNum = Random.Range(1, 14);
+        int cardColor = Random.Range(1, 5);
+
+        int cardIndex = ((cardNum - 1) * 4) + (cardColor - 1);
+        Instantiate(cards[cardIndex], position, Quaternion.identity);
+
+        Debug.Log($"Drew card: Number {cardNum}, Color {cardColor}, Index {cardIndex}");
+        return new CardInfo(cardNum, cardColor);
     }
 
-    string GetCardFace(int value)
+    GameObject coverCardAtPosition(Vector3 position)
     {
-        switch (value)
+        Vector3 coverPos = new Vector3(position.x, position.y, position.z - 0.1f);
+        return Instantiate(coverCard, coverPos, Quaternion.identity);
+    }
+
+    void RemoveCoverCard(int index)
+    {
+        if (index >= 0 && index < coverCards.Count)
         {
-            case 1: return "Ace";
-            case 11: return "Jack";
-            case 12: return "Queen";
-            case 13: return "King";
-            default: return value.ToString();
+            Destroy(coverCards[index]);
         }
     }
-
-    void GameOver(string message)
+    void nextGame()
     {
-        Debug.Log(message);
-        isGameOver = true;
+        SceneManager.LoadScene("Shooter");
     }
 }
