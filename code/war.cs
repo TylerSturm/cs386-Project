@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class War : MonoBehaviour
@@ -16,9 +17,13 @@ public class War : MonoBehaviour
     public int playerWin = 0;
     public int dealerWin = 0;
     public int plays = 1;
+    public GameObject RideTheBus;
+    public GameObject warTable;
 
     void Start()
     {
+        Debug.Log("Welcome to war!");
+        Debug.Log("You will each draw 3 cards, whoever has the higher card wins, best of three.");
         playerPosition = new Vector3(-2, -3, -2);
         dealerPosition = new Vector3(-2, 1, -2);
 
@@ -58,10 +63,12 @@ public class War : MonoBehaviour
         if (playerWin > dealerWin)
         {
             Debug.Log("You win!");
+            Invoke("nextGame", 3f);
         }
         else
         {
             Debug.Log("You lose!");
+            Invoke("nextGame", 3f);
         }
     }
 
@@ -75,6 +82,11 @@ public class War : MonoBehaviour
         {
             dealerWin++;
         }
+    }
+
+    void nextGame()
+    {
+        SceneManager.LoadScene("Ride");
     }
 
     int getCard(Vector3 position)

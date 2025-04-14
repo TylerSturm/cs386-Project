@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public struct CardInfo
@@ -154,6 +155,8 @@ public class Ride : MonoBehaviour
         else
         {
             Debug.Log("Wrong guess! Ride the bus...");
+
+            Invoke("nextGame", 3f);
             isGameOver = true;
         }
     }
@@ -185,6 +188,8 @@ public class Ride : MonoBehaviour
         else
         {
             Debug.Log("Wrong guess! Ride the bus...");
+
+            Invoke("nextGame", 3f);
             isGameOver = true;
         }
     }
@@ -216,6 +221,8 @@ public class Ride : MonoBehaviour
         else
         {
             Debug.Log("Wrong guess! Ride the bus...");
+
+            Invoke("nextGame", 3f);
             isGameOver = true;
         }
     }
@@ -247,12 +254,17 @@ public class Ride : MonoBehaviour
         if (guess == actualSuit)
         {
             Debug.Log("Correct guess! End Game");
+
+            Invoke("nextGame", 3f);
             phase++;
             isGameOver = true;
         }
         else
         {
             Debug.Log("Wrong guess! Ride the bus... End Game");
+
+            Invoke("nextGame", 3f);
+
             isGameOver = true;
         }
     }
@@ -267,6 +279,7 @@ public class Ride : MonoBehaviour
 
         Debug.Log($"Drew card: Number {cardNum}, Color {cardColor}, Index {cardIndex}");
         return new CardInfo(cardNum, cardColor);
+
     }
 
     GameObject coverCardAtPosition(Vector3 position)
@@ -281,5 +294,25 @@ public class Ride : MonoBehaviour
         {
             Destroy(coverCards[index]);
         }
+    }
+    void nextGame()
+    {
+        SceneManager.LoadScene("Shooter");
+
+    }
+
+    GameObject coverCardAtPosition(Vector3 position)
+    {
+        Vector3 coverPos = new Vector3(position.x, position.y, position.z - 0.1f);
+        return Instantiate(coverCard, coverPos, Quaternion.identity);
+    }
+
+    void RemoveCoverCard(int index)
+    {
+        if (index >= 0 && index < coverCards.Count)
+        {
+            Destroy(coverCards[index]);
+        }
+
     }
 }

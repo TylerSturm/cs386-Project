@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Blackjack : MonoBehaviour
 {
@@ -12,10 +14,14 @@ public class Blackjack : MonoBehaviour
     public int playerTotal = 0;
     public int dealerTotal = 0;
     public GameObject cover;
+    public bool playerWin;
+    public GameObject warTable;
  
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Debug.Log("Welcome to Blackjack!");
+        Debug.Log("Press \"Y\" to hit and \"N\" to stand");
         // deal player cards
         for(int i = 0; i < 2; i++)
         {
@@ -27,6 +33,8 @@ public class Blackjack : MonoBehaviour
         if(playerTotal == 21)
         {
             Debug.Log("Blackjack, you win!");
+            playerWin = true;
+            Invoke("nextGame", 3f);
         }
 
         // deal dealer cards
@@ -41,7 +49,9 @@ public class Blackjack : MonoBehaviour
         // check for dealer blackjack
         if(dealerTotal == 21)
         {
+            playerWin = false;
             Debug.Log("Dealer Blackjack, you lose!");
+            Invoke("nextGame", 3f);
         }
     }
 
@@ -58,6 +68,8 @@ public class Blackjack : MonoBehaviour
             {
                 Debug.Log("You Lose!");
                 this.enabled = false; 
+                playerWin = false;
+                Invoke("nextGame", 3f);
             }
         }
         if(Input.GetKeyDown(KeyCode.N))
@@ -77,19 +89,32 @@ public class Blackjack : MonoBehaviour
         if(dealerTotal > 21)
         {
             Debug.Log("Dealer bust you win!");
+            playerWin = true; 
+            Invoke("nextGame", 3f);      
         }
         else if(playerTotal > dealerTotal)
         {
             Debug.Log("You win!");
+            playerWin = true;
+            Invoke("nextGame", 3f);
         }
         else if(dealerTotal > playerTotal)
         {
             Debug.Log("You lost!");
+            playerWin = false;
+            Invoke("nextGame", 3f);
         }
         else
         {
             Debug.Log("You tied!");
+            playerWin = false;
+            Invoke("nextGame", 3f);
         }
+    }
+
+    void nextGame()
+    {
+        SceneManager.LoadScene("War");
     }
 
     int getCard(Vector3 position)
