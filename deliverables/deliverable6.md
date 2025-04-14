@@ -12,7 +12,7 @@ Issue: https://github.com/TylerSturm/cs386-Project/issues/21
 Pull request: https://github.com/TylerSturm/cs386-Project/pull/22  
 Implemented by: Daniel  
 Approved by: Brodric  
-Print screen: ![Image of ride the bus game.](/deliverables/RideGame.pdf)
+Print screen: ![Image of ride the bus game.](/deliverables/rideGame.png)
 
 ## Tests
 **Test framework used:** Unity Test Framework  
@@ -24,7 +24,7 @@ In this test it will check to see if each section of the ride the bus game works
 tests for each section's correct and incorrect guess by the player.  
 
 **Printout of Test results:**  
-![Image of test results for ride the bus game.](/deliverables/RideTests.pdf)
+![Image of test results for ride the bus game.](/deliverables/rideTests.png)
 
 ## Demo
 Include a link to a video showing the system working.
