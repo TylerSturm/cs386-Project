@@ -14,7 +14,7 @@ public class BlackjackBlackBoxTests
         testObject = new GameObject("BlackjackTestObject");
         blackjack = testObject.AddComponent<Blackjack>();
 
-        yield return null; // Let Start() finish
+        yield return null;
     }
 
     [UnityTearDown]
@@ -29,17 +29,15 @@ public class BlackjackBlackBoxTests
     {
         yield return null; // Let Start()
 
-        // 💥 SET UP: Control state
         SetPrivateField("playerTotal", 18);
-        SetPrivateField("dealerTotal", 16); // dealer low so he must draw and bust
-        SetPrivateField("cover", new GameObject()); // Dummy cover so no null error when Destroy()
+        SetPrivateField("dealerTotal", 16); 
+        SetPrivateField("cover", new GameObject()); 
 
-        // 💥 Simulate player pressing "N" (Stand)
+
         InvokePrivateMethod("dealerTurn");
 
         yield return new WaitForSeconds(0.5f);
 
-        // 💥 VERIFY: Player should win
         bool playerWin = GetPrivateField<bool>("playerWin");
         Assert.IsTrue(playerWin);
     }
@@ -47,16 +45,12 @@ public class BlackjackBlackBoxTests
     [UnityTest]
     public IEnumerator AcceptanceTest_PlayerLosesByBust()
     {
-        yield return null; // Let Start()
+        yield return null; 
 
-        // 💥 SET UP: Make player total 20 (near bust)
         SetPrivateField("playerTotal", 20);
 
-        // 💥 Simulate player pressing "Y" (Hit)
-        // But since Unity can't simulate Input.GetKeyDown, we fake a "bust" by manually adding points
-        blackjack.playerTotal += 5; // simulate bust (now 25)
+        blackjack.playerTotal += 5; 
 
-        // 💥 Simulate Update check (manual check if bust happens)
         if (blackjack.playerTotal > 21)
         {
             Debug.Log("Simulated Bust: Player total is " + blackjack.playerTotal);
@@ -65,12 +59,11 @@ public class BlackjackBlackBoxTests
 
         yield return new WaitForSeconds(0.5f);
 
-        // 💥 VERIFY: Player should lose
         bool playerWin = GetPrivateField<bool>("playerWin");
         Assert.IsFalse(playerWin);
     }
 
-    // Utility methods
+
     private void InvokePrivateMethod(string name, params object[] parameters)
     {
         typeof(Blackjack).GetMethod(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
