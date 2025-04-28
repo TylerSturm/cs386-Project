@@ -3,7 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-public class RideBlackBoxTest
+public class RideBlackBoxTests
 {
     private GameObject testObject;
     private Ride ride;
@@ -13,59 +13,67 @@ public class RideBlackBoxTest
     {
         testObject = new GameObject("RideTestObject");
         ride = testObject.AddComponent<Ride>();
-
-        yield return null; // Wait for Unity to auto-call Start()
+        yield return null; // Wait for Unity to call Start()
     }
 
     [UnityTearDown]
     public IEnumerator TearDown()
     {
-        Object.Destroy(testObject);
+        Object.DestroyImmediate(testObject);
         yield return null;
     }
 
     [UnityTest]
-    public IEnumerator AcceptanceTest_PlayerGuessesCorrectColor()
+    public IEnumerator PlayerCorrectlyGuessesColor_PhaseAdvances()
     {
-        yield return null; // Let Start() happen
+        ride.SetUpNewRound(new CardInfo(7, 2)); // Diamonds = red
+        yield return null;
 
-        // 💥 IMPORTANT: Force clean setup
-        SetPrivateField("drawnCards", new System.Collections.Generic.List<CardInfo> {
-            new CardInfo(7, 2) // Red card (Diamonds)
-        });
-        SetPrivateField("phase", 1);
-        SetPrivateField("guessIndex", 0);
-        SetPrivateField("isGameOver", false);
+        ride.GuessColor("red");
+        yield return null;
 
-        // 💥 Directly simulate the player guessing red
-        InvokePrivateMethod("colorGuess", "red");
-
-        yield return new WaitForSeconds(0.1f);
-
-        // 💥 Check the phase moved to 2 (player guessed correctly)
-        int phase = GetPrivateField<int>("phase");
-        Assert.AreEqual(2, phase);
-
-        // 💥 Check that game did not end
-        bool isGameOver = GetPrivateField<bool>("isGameOver");
-        Assert.IsFalse(isGameOver);
+        Assert.AreEqual(2, ride.CurrentPhase); // Should advance to phase 2
+        Assert.IsFalse(ride.IsGameOver);
     }
 
-    private void InvokePrivateMethod(string name, params object[] parameters)
+    [UnityTest]
+    public IEnumerator PlayerIncorrectlyGuessesColor_GameOver()
     {
-        typeof(Ride).GetMethod(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .Invoke(ride, parameters);
+        ride.SetUpNewRound(new CardInfo(7, 4)); // Spades = black
+        yield return null;
+
+        ride.GuessColor("red"); // Wrong guess
+        yield return null;
+
+        Assert.AreEqual(0, ride.CurrentPhase); // Likely reset
+        Assert.IsTrue(ride.IsGameOver);
     }
 
-    private void SetPrivateField<T>(string name, T value)
+    [UnityTest]
+    public IEnumerator SetupCreatesStartingPhase()
     {
-        typeof(Ride).GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .SetValue(ride, value);
+        ride.SetUpNewRound(new CardInfo(5, 1)); // Hearts = red
+        yield return null;
+
+        Assert.AreEqual(1, ride.CurrentPhase); // Should start at phase 1
     }
 
-    private T GetPrivateField<T>(string name)
+    [UnityTest]
+    public IEnumerator GuessAfterGameOver_DoesNothing()
     {
-        return (T)typeof(Ride).GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .GetValue(ride);
+        ride.SetUpNewRound(new CardInfo(10, 4)); // Spades = black
+        yield return null;
+
+        ride.GuessColor("red"); // Wrong guess
+        yield return null;
+
+        Assert.IsTrue(ride.IsGameOver);
+
+        int oldPhase = ride.CurrentPhase;
+
+        ride.GuessColor("black"); // Try to guess after losing
+        yield return null;
+
+        Assert.AreEqual(oldPhase, ride.CurrentPhase); // Should not change
     }
 }
